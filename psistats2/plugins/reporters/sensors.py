@@ -8,19 +8,20 @@ except:
 from psistats2.openhardwaremonitor.openhardwaremonitor import OpenHardwareMonitor
 from psireporter import ReporterPlugin    
 
+
 class SensorReporter(metaclass=ReporterPlugin):
 
     PLUGIN_ID = "sensors"
     
     def __init__(self):
+        self.initialized = False    
+            
+    def init(self):
         if os.name == 'nt':
             self._reporter = OHMReporter(self.config)
         else:
             self._reporter = LmSensors(self.config)
             
-        self.initialized = False
-            
-    def init(self):
         self._reporter.init()
         self.initialized = True
         

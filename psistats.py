@@ -9,49 +9,8 @@ import time
 import pprint
 
 conf = config.load('psistats.conf')
-print(conf['reporters']['disk_usage'])
 
-
-"""
-config = {
-    'reporters': {
-        'cpu_per_core': {
-            'interval': 1
-        },
-        'cpu_total': {
-            'interval': 1,
-            'enabled': False
-        },
-        'memory': {
-            'interval': 10
-        },
-        'disk_usage': {
-            'interval': 30,
-            'settings': {
-                'disks': ['c:/','d:/']
-            }
-        },
-        'lm_sensors': {
-            'interval': 5,
-            'enabled': False,
-            'settings': {
-                'features': [
-                    'coretemp-isa-0000:temp1_input',
-                    'coretemp-isa-0000:temp2_input',
-                    'coretemp-isa-0000:temp3_input',
-                    'coretemp-isa-0000:temp4_input'
-                ]
-            }
-        },
-        'openhardwaremonitor': {
-            'interval': 5,
-            'enabled': True
-        }
-    }
-}
-
-manager = Manager(config)
-
+manager = Manager(conf)
 manager.start()
 
 print('START')
@@ -69,4 +28,3 @@ while True:
 print('END')
 
 manager.stop()
-"""

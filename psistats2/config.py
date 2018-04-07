@@ -49,7 +49,8 @@ def load(fn):
                 'enabled'
             ])
             
-            print(plugin_id, plugin_config)
+            plugin_config['interval'] = int(plugin_config['interval'])
+            plugin_config['enabled'] = False if plugin_config['enabled'] == "no" else True
             
             parsed_config['reporters'][plugin_id] = plugin_config
                                 
@@ -60,6 +61,7 @@ def load(fn):
                 'enabled'
             ])
             
+            plugin_config['enabled'] = False if plugin_config['enabled'] == "no" else True
             parsed_config['outputters'][plugin_id] = plugin_config
                         
     return parsed_config

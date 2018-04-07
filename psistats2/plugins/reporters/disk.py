@@ -9,8 +9,6 @@ class DiskUsage(metaclass=ReporterPlugin):
 
         disk_usages = []
 
-        print('config:', self.config)
-
         for disk in self.config['disks']:
             usage = psutil.disk_usage(disk)
             disk_usages.append((disk, usage.total, usage.free))
