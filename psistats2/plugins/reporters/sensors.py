@@ -1,6 +1,31 @@
-from psistats2.libsensors.lib import sensors as libsensors
-from psireporter import ReporterPlugin
+try:
+    from psistats2.libsensors.lib import sensors as libsensors
+except:
+    pass
 
+from psistats2.openhardwaremonitor.openhardwaremonitor import OpenHardwareMonitor
+    
+from psireporter import ReporterPlugin    
+
+class OHMReporter(metaclass=ReporterPlugin):
+
+    PLUGIN_ID = 'openhardwaremonitor'
+    
+    def  __init__(self):
+        self.initialized = False
+        self.ohm = OpenHardwareMonitor(CPUEnabled=True)
+        
+    def init(self):
+        self.ohm.init()
+        self.initialized = True
+        
+    def report(self):
+        if self.initialized is False:
+            self.init()
+        self.ohm.update()
+        return "ohhhhmmmmm"
+                
+        
 class LmSensors(metaclass=ReporterPlugin):
 
     PLUGIN_ID = 'lm_sensors'

@@ -18,13 +18,14 @@ config = {
             'interval': 10
         },
         'disk_usage': {
-            'interval': 10,
+            'interval': 30,
             'settings': {
-                'disks': ['/', '/media/v0idnull/Windows7_OS', '/media/v0idnull/Data2']
+                'disks': ['c:/','d:/']
             }
         },
         'lm_sensors': {
             'interval': 5,
+            'enabled': False,
             'settings': {
                 'features': [
                     'coretemp-isa-0000:temp1_input',
@@ -33,6 +34,10 @@ config = {
                     'coretemp-isa-0000:temp4_input'
                 ]
             }
+        },
+        'openhardwaremonitor': {
+            'interval': 5,
+            'enabled': True
         }
     }
 }
