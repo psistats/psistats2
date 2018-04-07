@@ -4,7 +4,15 @@ from psistats2.plugins.reporters.mem import MemoryReport
 from psistats2.plugins.reporters.disk import DiskUsage
 from psistats2.plugins.reporters.sensors import LmSensors
 from psistats2.plugins.output.stdout import OutputStdout
+from psistats2 import config
 import time
+import pprint
+
+conf = config.load('psistats.conf')
+print(conf['reporters']['disk_usage'])
+
+
+"""
 config = {
     'reporters': {
         'cpu_per_core': {
@@ -61,3 +69,4 @@ while True:
 print('END')
 
 manager.stop()
+"""
