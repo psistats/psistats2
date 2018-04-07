@@ -1,17 +1,41 @@
+import os
+
 try:
     from psistats2.libsensors.lib import sensors as libsensors
 except:
     pass
 
 from psistats2.openhardwaremonitor.openhardwaremonitor import OpenHardwareMonitor
-    
 from psireporter import ReporterPlugin    
 
-class OHMReporter(metaclass=ReporterPlugin):
+class SensorReporter(metaclass=ReporterPlugin):
+
+    PLUGIN_ID = "sensors"
+    
+    def __init__(self):
+        if os.name == 'nt':
+            self._reporter = OHMReporter(self.config)
+        else:
+            self._reporter = LmSensors(self.config)
+            
+        self.initialized = False
+            
+    def init(self):
+        self._reporter.init()
+        self.initialized = True
+        
+    def report(self):
+        if self.initialized is False:
+            self.init()
+        return self._reporter.report()
+        
+
+class OHMReporter():
 
     PLUGIN_ID = 'openhardwaremonitor'
     
-    def  __init__(self):
+    def  __init__(self, config):
+        self.config = config
         self.initialized = False
         self.ohm = OpenHardwareMonitor(CPUEnabled=True)
         
@@ -26,11 +50,12 @@ class OHMReporter(metaclass=ReporterPlugin):
         return "ohhhhmmmmm"
                 
         
-class LmSensors(metaclass=ReporterPlugin):
+class LmSensors():
 
     PLUGIN_ID = 'lm_sensors'
 
-    def __init__(self):
+    def __init__(self, config):
+        self.config = config
         self.sensors_initialized = False
         self.__features = []
 
