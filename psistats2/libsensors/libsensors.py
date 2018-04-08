@@ -8,11 +8,12 @@ def print_all_sensors():
     rows = []
 
     for sensor in lm.sensors:
-        rows.append([sensor.identifier, sensor.type])
+        rows.append([sensor.identifier, sensor.label, sensor.type])
 
-    col_widths = [max([len(col[0]) for col in rows]) + 2]
+    col_widths = [max([len(col[0]) for col in rows]) + 2, max([len(col[1]) for col in rows]) + 2]
 
     sys.stdout.write('Identifier'.ljust(col_widths[0]))
+    sys.stdout.write('Name'.ljust(col_widths[1]))
     sys.stdout.write('Type')
     sys.stdout.write(os.linesep)
     sys.stdout.write('-' * 80)
@@ -20,7 +21,7 @@ def print_all_sensors():
 
     for row in rows:
         for idx, col in enumerate(row):
-            if idx < 1:
+            if idx < 2:
                 sys.stdout.write(col.ljust(col_widths[idx]))
             else:
                 sys.stdout.write(col)
@@ -33,6 +34,7 @@ class Sensor():
         self._sensor = sensor
         self._chip = chip
         self._identifier = '%s:%s' % (str(chip), self._sensor.name.decode('utf-8'))
+        self._label = '%s' % (self._feature.label)
 
     @property
     def type(self):
@@ -45,6 +47,10 @@ class Sensor():
     @property
     def identifier(self):
         return self._identifier
+
+    @property
+    def label(self):
+        return self._label
 
 class LibSensors():
 

@@ -1,7 +1,8 @@
 import os
 
+
 try:
-    from psistats2.libsensors.lib import sensors as libsensors
+    from psistats2.libsensors.libsensors import LibSensors
 except:
     pass
 
@@ -33,8 +34,6 @@ class SensorReporter(metaclass=ReporterPlugin):
 
 class OHMReporter():
 
-    PLUGIN_ID = 'openhardwaremonitor'
-
     def  __init__(self, config):
         self.config = config
         self.initialized = False
@@ -53,33 +52,21 @@ class OHMReporter():
 
 class LmSensors():
 
-    PLUGIN_ID = 'lm_sensors'
-
     def __init__(self, config):
         self.config = config
         self.sensors_initialized = False
-        self.__features = []
+        self._libsensors = None
 
     def init(self):
-        libsensors.init()
-
-        chips = libsensors.iter_detected_chips()
-
-        for chip in chips:
-            confKey = str(chip)
-
-            for feature in chip:
-                for subfeature in feature:
-                    featureName = '%s:%s' % (confKey, subfeature.name.decode('utf-8'))
-
-                    if featureName in self.config['features']:
-                        self.__features.append((featureName, subfeature))
+        self._libsensors = LibSensors(identifiers=self.config['sensors'])
+        self._libsensors.init()
 
         self.sensors_initialized = True
 
     def report(self):
         if self.sensors_initialized == False:
             self.init()
+        return self._libsensors.sensor_values()
 
-        return [(fname, sf.get_value()) for fname, sf in self.__features]
+#        return [(fname, sf.get_value()) for fname, sf in self.__features]
 
