@@ -9,7 +9,59 @@ DLL_NAME = 'OpenHardwareMonitorLib'
 DLL_FILENAME = '%s.dll' % DLL_NAME
 DLL_PATH     = os.path.dirname(os.path.realpath(__file__))
 
+sys.path.append(DLL_PATH)
+
+clr.AddReference(DLL_NAME)
+clr.AddReference('System')
+
+from OpenHardwareMonitor.Hardware import Computer, ISensor, SensorType
+from System import Enum
+
+def get_type_name(type):
+    typeName = Enum.GetName(SensorType, type)
+    return typeName
+    
+def print_all_sensors():
+    ohm = OpenHardwareMonitor(
+        MainboardEnabled=True,
+        FanControllerEnabled=True,
+        CPUEnabled=True,
+        RAMEnabled=True,
+        GPUEnabled=True,
+        HDDEnabled=True
+    )
+    ohm.init()
+    ohm.update()
+    
+    rows = []
+    
+    for sensor in ohm.all_sensors():
+        rows.append([str(sensor.Identifier), sensor.Name, get_type_name(sensor.SensorType)])
+    
+    col_widths = [max([len(col[0]) for col in rows]) + 2, max([len(col[1]) for col in rows]) + 2]
+    
+    sys.stdout.write('Identifier'.ljust(col_widths[0]))
+    sys.stdout.write('Name'.ljust(col_widths[1]))
+    sys.stdout.write('Type')
+    sys.stdout.write(os.linesep)
+    sys.stdout.write('-' * 80)
+    sys.stdout.write(os.linesep)
+    
+    for row in rows:
+    
+        for idx, col in enumerate(row):
+            if idx < 2:
+                sys.stdout.write(col.ljust(col_widths[idx]))
+            else:
+                sys.stdout.write(col)
+        sys.stdout.write(os.linesep)
+        
+    ohm.close()
+            
+
 class OpenHardwareMonitor():
+
+    SETTINGS = ['MainboardEnabled', 'CPUEnabled', 'RAMEnabled', 'GPUEnabled', 'FanControllerEnabled', 'HDDEnabled']
 
     def __init__(self, **kwargs):
         self.MainboardEnabled = kwargs.get('MainboardEnabled', False)
@@ -23,17 +75,9 @@ class OpenHardwareMonitor():
         
     def init(self):
         
-        sys.path.append(DLL_PATH)
-        
-        clr.AddReference(DLL_NAME)
-        clr.AddReference('System')
-        
-        from OpenHardwareMonitor.Hardware import Computer, ISensor, SensorType
-        from System import Enum
-        
         comp = Computer()
         
-        for setting in ['MainboardEnabled', 'CPUEnabled', 'RAMEnabled', 'GPUEnabled', 'FanControllerEnabled', 'HDDEnabled']:
+        for setting in OpenHardwareMonitor.SETTINGS:
             setattr(comp, setting, getattr(self, setting))
         
         
@@ -43,3 +87,21 @@ class OpenHardwareMonitor():
     def update(self):
         for hw in self.__comp.Hardware:
             hw.Update()
+            
+    def hardware(self):
+        return self.__comp.Hardware
+        
+    def all_sensors(self):
+    
+        sensors = []
+    
+        for hw in self.__comp.Hardware:
+            hw.Update()
+            
+            for sensor in hw.Sensors:
+                sensors.append(sensor)
+                
+        return sensors
+        
+    def close(self):
+        self.__comp.Close()

@@ -1,3 +1,5 @@
 git+https://github.com/alex-dow/psireporter@develop
 psutil
 uptime
+netifaces
+docopt
