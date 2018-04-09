@@ -34,15 +34,44 @@ def print_all_ifaces():
     sys.stdout.write(os.linesep)
 
     for name, nice_name, ips in ipaddrs:
-        sys.stdout.write(name.ljust(namewidth))
-        sys.stdout.write(nice_name.ljust(nicenamewidth))
-        sys.stdout.write(ips[0])
+
+        first_ip = ips[0]
+        if type(first_ip) is tuple:
+            first_ip = ips[0][0]
+        
+        try:
+            first_ip = first_ip.decode('utf-8')
+        except AttributeError:
+            pass
+            
+        try:
+            name = name.decode('utf-8')
+        except AttributeError:
+            pass
+        
+        try:
+            nice_name = name.decode('utf-8')
+        except AttributeError:
+            pass
+	
+        sys.stdout.write('%s' % (name.ljust(namewidth)))
+        sys.stdout.write('%s' % (nice_name.ljust(nicenamewidth)))
+        sys.stdout.write('%s' % first_ip)
         sys.stdout.write(os.linesep)
 
         if len(ips) > 1:
             for ip in ips[1:]:
+                
+                if type(ip) is tuple:
+                    ip = ip[0]
+           
+                try:
+                    ip = ip.decode('utf-8')
+                except AttributeError:
+                    pass
+            
                 sys.stdout.write(' ' * (namewidth + nicenamewidth))
-                sys.stdout.write(ip[0])
+                sys.stdout.write(ip)
                 sys.stdout.write(os.linesep)
 
 
