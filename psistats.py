@@ -7,6 +7,7 @@ from psistats2.plugins.reporters.uptime import UptimeReporter
 from psistats2.plugins.reporters.network import IPAddrReporter
 from psistats2.plugins.output.stdout import OutputStdout
 from psistats2.plugins.output.logging import OutputLogging
+from psistats2.plugins.output.amqp import AMQPOutput
 from psistats2 import config
 from psistats2.cli import main
 import time
