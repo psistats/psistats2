@@ -1,6 +1,5 @@
 from psireporter import ReporterPlugin
-import netifaces
-
+import ifaddr
 def list_all_ifaces():
 
     addresses = []
@@ -28,10 +27,8 @@ class IPAddrReporter(metaclass=ReporterPlugin):
     def report(self):
         ipaddrs = []
 
-        for iface in self.config['ifaces']:
-            addrs = netifaces.ifaddresses(iface)[netifaces.AF_LINK]
-
-            ipaddrs.append(addrs)
+        for adapter in ifaddr.get_adapters():
+            ipaddrs.append((adapter.name, [ip.ip for ip in adapter.ips]))
 
         return ipaddrs
 
