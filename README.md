@@ -2,6 +2,8 @@
 
 psistats2 is a very basic, cross-platform tool to monitor your system's health. Out of the box it can report on several different types of information, as well as leveraging [lm-sensors](https://hwmon.wiki.kernel.org/lm_sensors "lm-sensors") (for Linux/Unix based systems) and [OpenHardwareMonitor](https://github.com/openhardwaremonitor/openhardwaremonitor "OpenHardwareMonitor") (for Windows based systems) to offer output from available hardware sensors.
 
+This project is still in development.
+
 ## Features
 
 1. Supports Linux, Unix, and Windows based systems. (not tested on OS X, your mileage may vary)
