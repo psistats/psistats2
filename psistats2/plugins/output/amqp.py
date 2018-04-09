@@ -1,7 +1,9 @@
 from psireporter import OutputPlugin
-import time, logging
+import time, logging, json
 
 class AMQPOutput(metaclass=OutputPlugin):
+
+    PLUGIN_ID = 'amqp'
 
     def __init__(self):
         self._connection = None
@@ -33,7 +35,7 @@ class AMQPOutput(metaclass=OutputPlugin):
         self._channel = self._connection.channel()
         self._channel.exchange_declare(
             exchange=self.config['exchange'],
-            type='topic',
+            exchange_type='topic',
             durable=False,
             auto_delete=False
         )
@@ -48,4 +50,5 @@ class AMQPOutput(metaclass=OutputPlugin):
                 time.sleep(10)
                 return
 
-        print('amqp!')
+        self._channel.basic_publish(self.config['exchange'], 'psistats', json.dumps(dict(report)))
+
