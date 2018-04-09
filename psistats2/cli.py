@@ -3,7 +3,8 @@ import os
 import logging
 from logging.config import fileConfig
 from psistats2 import config
-from psistats2.plugins.reporters.network import list_all_ifaces
+from psistats2.report import PsistatsReport
+from psistats2.plugins.reporters.network import print_all_ifaces
 import time
 from psireporter import Manager
 __doc__ = """psistats2
@@ -25,7 +26,7 @@ Options:
 """
 
 def list_ifaces():
-    list_all_ifaces()
+    print_all_ifaces()
 
 def list_sensors():
     if os.name is 'nt':
@@ -41,7 +42,7 @@ def stop():
     print('Not implemented yet')
 
 def console(conf):
-    manager = Manager(conf)
+    manager = Manager(conf, reportClass=PsistatsReport)
     manager.start()
 
     try:

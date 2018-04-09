@@ -2,6 +2,13 @@ from psistats2.libsensors.lib import sensors as lmsensors
 import sys, os
 
 def print_all_sensors():
+
+    print('-' * 80)
+    print('List of all available sensors')
+    print('')
+    print('Use the idenifier when configuring which sensors to report.')
+    print('')
+
     lm = LibSensors()
     lm.init()
 

@@ -9,5 +9,5 @@ class OutputLogging(metaclass=OutputPlugin):
         self.logger = logging.getLogger('psistats2')
 
     def send(self, report):
-        self.logger.info('[%s] - %s' % (report.sender, report.message))
+        self.logger.info('[%s:%s] - %s' % (report.id, report.sender, report.message))
 

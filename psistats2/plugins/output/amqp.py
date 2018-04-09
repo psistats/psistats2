@@ -50,5 +50,5 @@ class AMQPOutput(metaclass=OutputPlugin):
                 time.sleep(10)
                 return
 
-        self._channel.basic_publish(self.config['exchange'], 'psistats', json.dumps(dict(report)))
+        self._channel.basic_publish(self.config['exchange'], 'psistats.' + report.id, json.dumps(dict(report)))
 
