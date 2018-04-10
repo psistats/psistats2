@@ -82,7 +82,16 @@ class IPAddrReporter(metaclass=ReporterPlugin):
         ipaddrs = []
 
         for adapter in ifaddr.get_adapters():
-            ipaddrs.append((adapter.name, [ip.ip for ip in adapter.ips]))
+            
+            ips = [ip.ip for ip in adapter.ips]
+            
+            if not isinstance(adapter.name, str):
+                name = adapter.name.decode('utf-8')
+            else:
+                name = adapter.name
+                
+            if name in self.config['ifaces']:
+                ipaddrs.append((name, ips))
 
         return ipaddrs
 
