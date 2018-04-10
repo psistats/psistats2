@@ -46,18 +46,23 @@ class PsistatsService(win32serviceutil.ServiceFramework):
             
             traceback.print_tb(e.__traceback__, file=output)
 
-            servicemanager.LogInfoMsg('ERROR: %s' % e)
-            servicemanager.LogInfoMsg('ERROR: %s' % output.getvalue())
+            servicemanager.LogErrorMsg('ERROR: %s' % e)
+            servicemanager.LogErrorMsg('ERROR: %s' % output.getvalue())
             
             output.close()
 
     def main(self):
 
-        home_dir = 'c:\\Users\\IEUser'
+        home_dir = os.path.realpath(os.path.join(os.path.dirname(__file__), '..'))
+    
+        # home_dir = 'c:\\Users\\IEUser'
     
         servicemanager.LogInfoMsg('HOME DIR: %s' % home_dir)
     
         conffile = os.path.join(home_dir, 'psistats.conf')
+        
+        if os.path.exists(conffile) == False:
+            raise Exception("%s does not exist" % conffile)
         
         conf = config.load(conffile)
         fileConfig(conffile)
