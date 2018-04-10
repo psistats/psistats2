@@ -1,6 +1,4 @@
 from setuptools import setup, find_packages
-import py2exe
-
 
 setup(name='psistats2',
       version='0.0.1-develop',
