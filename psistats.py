@@ -9,6 +9,7 @@ from psistats2.plugins.output.stdout import OutputStdout
 from psistats2.plugins.output.logging import OutputLogging
 from psistats2.plugins.output.amqp import AMQPOutput
 from psistats2.plugins.output.http import HttpOutput
+from psistats2.plugins.output.udp import UDPOutput
 from psistats2 import config
 from psistats2.cli import main
 import time

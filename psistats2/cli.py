@@ -54,9 +54,6 @@ def console(conf):
         manager.stop()
 
 
-
-
-
 def main(argv):
     arguments = docopt(__doc__, argv=argv, version='psistats2 v0.0.1')
 
