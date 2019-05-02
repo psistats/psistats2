@@ -1,4 +1,4 @@
-from psireporter import OutputPlugin
+from psistats2.psireporter import OutputPlugin
 
 class OutputStdout(metaclass=OutputPlugin):
     PLUGIN_ID = 'stdout'

@@ -1,4 +1,4 @@
-from psireporter import OutputPlugin
+from psistats2.psireporter import OutputPlugin
 import logging
 
 class OutputLogging(metaclass=OutputPlugin):

@@ -10,7 +10,7 @@ import io
 import traceback
 from psistats2 import config
 from psistats2.report import PsistatsReport
-from psireporter import Manager
+from psistats2.psireporter import Manager
 from logging.config import fileConfig
 
 class PsistatsService(win32serviceutil.ServiceFramework):

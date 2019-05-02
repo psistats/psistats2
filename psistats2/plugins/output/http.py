@@ -1,4 +1,4 @@
-from psireporter import OutputPlugin
+from psistats2.psireporter import OutputPlugin
 import json
 import urllib.request
 import urllib.error

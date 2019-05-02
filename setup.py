@@ -7,5 +7,20 @@ setup(name='psistats2',
       author_email='adow@psikon.com',
       url='https://github.com/psistats/psistats2',
       packages=find_packages(exclude=('env')),
-      console=['psistats.py']
+      entry_points = {
+          'console_scripts': ['psistats=psistats2.cli:main']
+      },
+      python_requires='>=3',
+      classifiers = [
+          'Programming Language :: Python :: 3',
+          'License :: OSI Approved :: MIT License',
+          'Operating System :: OS Independent',
+          'Development Status :: 3 - Alpha',
+          'Environment :: Console',
+          'Environment :: Win32',
+          'Intended Audience :: Information Technology',
+          'Operating System :: Microsoft :: Windows',
+          'Operating System :: POSIX',
+          'Topic :: System :: Monitoring'
+     ]
 )

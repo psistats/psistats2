@@ -1,4 +1,4 @@
-from psireporter import OutputPlugin
+from psistats2.psireporter import OutputPlugin
 import time, logging, json
 
 class AMQPOutput(metaclass=OutputPlugin):

@@ -7,7 +7,7 @@ except:
     pass
 
 from psistats2.openhardwaremonitor.openhardwaremonitor import OpenHardwareMonitor, print_all_sensors
-from psireporter import ReporterPlugin
+from psistats2.psireporter import ReporterPlugin
 
 
 class SensorReporter(metaclass=ReporterPlugin):
