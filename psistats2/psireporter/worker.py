@@ -62,15 +62,15 @@ class Manager(threading.Thread):
         {
         'reporters': {
             'reporter-id': {
-            'interval': 1,
-            'enabled': True,
-            'settings': {}
-          }
+              'interval': 1,
+              'enabled': True,
+              'settings': {}
+            }
         },
         'outputters': {
             'output-id': {
-            'enabled': False,
-            'settings': {}
+               'enabled': False,
+               'settings': {}
           }
         }
 
@@ -118,6 +118,9 @@ class Manager(threading.Thread):
         self.logger.debug('Start manager threads')
         outputters = Registry.GetEntries('outputters')
         reporters = Registry.GetEntries('reporters')
+
+        print('total outputters: %s' % len(outputters))
+        print('total reporters: %s' % len(reporters))
 
         o_manager = OutputManager(outputters, self.config.get('outputters', {}))
         r_manager = ReporterManager(reporters, o_manager, self.config.get('reporters', {}),
