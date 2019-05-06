@@ -5,7 +5,7 @@ import logging
 from datetime import datetime
 import uuid
 import calendar
-from psistats2.psireporter.registry import Registry
+from psistats2.reporter.registry import Registry
 
 
 class Report(tuple):

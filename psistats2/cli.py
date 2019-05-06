@@ -5,7 +5,7 @@ from logging.config import fileConfig
 from psistats2 import config
 from psistats2.report import PsistatsReport
 import time
-from psistats2.psireporter import Manager
+from psistats2.reporter import Manager
 from psistats2.plugins.output import *
 from psistats2.plugins.reporters import *
 import ifaddr

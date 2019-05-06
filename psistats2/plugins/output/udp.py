@@ -1,4 +1,4 @@
-from psistats2.psireporter import OutputPlugin
+from psistats2.reporter import OutputPlugin
 import time, logging, json, socket
 
 class UDPOutput(metaclass=OutputPlugin):

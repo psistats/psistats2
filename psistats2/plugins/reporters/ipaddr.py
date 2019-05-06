@@ -1,4 +1,4 @@
-from psistats2.psireporter import ReporterPlugin
+from psistats2.reporter import ReporterPlugin
 import netifaces
 
 class IPAddrReporter(metaclass=ReporterPlugin):

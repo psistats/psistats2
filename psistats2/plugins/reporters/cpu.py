@@ -1,5 +1,5 @@
 import psutil
-from psistats2.psireporter.plugin import ReporterPlugin
+from psistats2.reporter.plugin import ReporterPlugin
 
 class CpuPerCore(metaclass=ReporterPlugin):
 

@@ -1,4 +1,4 @@
-from psistats2.psireporter.registry import Registry
+from psistats2.reporter.registry import Registry
 
 
 class PluginMeta(type):

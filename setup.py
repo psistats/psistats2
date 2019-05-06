@@ -8,7 +8,7 @@ setup(name='psistats2',
       url='https://github.com/psistats/psistats2',
       packages=find_packages(exclude=('env')),
       entry_points = {
-          'console_scripts': ['psistats=psistats2.cli:main']
+          'console_scripts': ['psistats2=psistats2.cli:main']
       },
       python_requires='>=3',
       classifiers = [

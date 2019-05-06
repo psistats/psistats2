@@ -1,4 +1,4 @@
-from psistats2.psireporter.worker import Report
+from psistats2.reporter.worker import Report
 import platform, calendar
 from datetime import datetime
 class PsistatsReport(Report):
