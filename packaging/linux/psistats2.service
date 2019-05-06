@@ -1,0 +1,12 @@
+[Unit]
+Description=psistats2
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/psistats2 console
+User=psistats2
+Group=psistats2
+
+[Install]
+WantedBy=multi-user.target

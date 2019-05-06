@@ -6,7 +6,7 @@ setup(name='psistats2',
       author='Alex Dow',
       author_email='adow@psikon.com',
       url='https://github.com/psistats/psistats2',
-      packages=find_packages(exclude=('env')),
+      packages=find_packages(exclude=('venv3')),
       entry_points = {
           'console_scripts': ['psistats2=psistats2.cli:main']
       },

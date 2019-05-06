@@ -9,8 +9,6 @@ class UptimeReporter(metaclass=ReporterPlugin):
 
     def __init__(self):
 
-        print('??? %s' % os.name)
-
         if os.name is 'posix':
             self._lib = ctypes.CDLL('libc.so.6')
             self._buf = ctypes.create_string_buffer(4096)

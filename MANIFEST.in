@@ -1,2 +1,10 @@
 include psistats2/openhardwaremonitor/OpenHardwareMonitorLib.dll
 include requirements.txt
+include README.md
+include LICENSE
+include setup.py
+include requirements.txt
+recursive-include packaging *
+recursive-include etc *
+prune */__pycache__
+global-exclude *.pyc *~ *.swp *.pyo

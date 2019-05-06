@@ -119,8 +119,8 @@ class Manager(threading.Thread):
         outputters = Registry.GetEntries('outputters')
         reporters = Registry.GetEntries('reporters')
 
-        print('total outputters: %s' % len(outputters))
-        print('total reporters: %s' % len(reporters))
+        self.logger.debug('Available output plugins: %s' % len(outputters))
+        self.logger.debug('Available reporter plugins: %s' % len(reporters))
 
         o_manager = OutputManager(outputters, self.config.get('outputters', {}))
         r_manager = ReporterManager(reporters, o_manager, self.config.get('reporters', {}),
@@ -132,7 +132,7 @@ class Manager(threading.Thread):
 
         self.logger.debug('Started')
         while self.running is True:
-            time.sleep(5)
+            time.sleep(1)
 
         o_manager.stop()
         r_manager.stop()
@@ -217,8 +217,6 @@ class OutputManager(threading.Thread):
 
             if self.config[outputter_id]['enabled'] is not False:
 
-                print('OUTPUTTER:', outputter)
-
                 plugin = outputter(self.config[outputter_id]['settings'])
                 ow = OutputWorker(plugin)
 
@@ -257,7 +255,7 @@ class OutputManager(threading.Thread):
         self.logger.debug('Started')
 
         while self.running is True:
-            time.sleep(10)
+            time.sleep(1)
 
         for worker in self._workers:
             worker.stop()

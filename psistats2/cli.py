@@ -1,5 +1,11 @@
+
+
 from docopt import docopt
 import os, sys
+
+print('System path: %s' % sys.path)
+# print('Env path: %s' % os.environ['PYTHONPATH'].split(os.pathsep))
+
 import logging
 from logging.config import fileConfig
 from psistats2 import config
@@ -9,7 +15,6 @@ from psistats2.reporter import Manager
 from psistats2.plugins.output import *
 from psistats2.plugins.reporters import *
 import ifaddr
-
 
 __doc__ = """psistats2
 
@@ -28,6 +33,10 @@ Options:
     -h --help      Display this help
     --version      Display the version
 """
+
+PIDFILE='/var/run/psistats2.pid'
+
+       
 
 def print_all_ifaces():
 
@@ -116,10 +125,15 @@ def list_sensors():
     print_all_sensors()
 
 def start():
-    print('Not implemented yet')
-
+    pass
+    
 def stop():
-    print('Not implemented yet')
+    pass
+
+
+def restart():
+    stop()
+    start()
 
 def console(conf):
 
@@ -145,7 +159,7 @@ def run(argv):
 
     arguments = docopt(__doc__, argv=argv[1:], version='psistats2 v0.0.1')
 
-    conffile = arguments['--config'] if arguments['--config'] is not None else 'psistats.conf'
+    conffile = arguments['--config'] if arguments['--config'] is not None else config.detect_config_file()
 
     conf = config.load(conffile)
 

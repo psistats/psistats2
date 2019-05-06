@@ -2,6 +2,26 @@ import configparser
 import json
 import os
 
+def detect_config_file():
+
+    cwd = os.getcwd()
+
+    # Check working directory for psistats2.conf
+    path = os.path.join(cwd, 'psistats2.conf')
+
+    if os.path.isfile(path):
+        return path
+
+    # Check $PWD/etc for psistats2.conf
+    path = os.path.join(cwd, 'etc', 'psistats2.conf')
+    if os.path.isfile(path):
+        return path
+
+    # Check /etc/psistats2.conf
+    path = '/etc/psistats2.conf'
+    if os.path.isfile(path):
+        return path
+
 
 def process_plugin(plugin_config, defaults, reserved):
 
