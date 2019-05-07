@@ -27,6 +27,8 @@ pipeline {
             steps {
                 sh 'building/debian/python_pkg.sh'
                 archiveArtifacts artifacts: 'dist/debian_output/*.deb', fingerprint: true
+                sh 'aptly repo add psikon-devel dist/debian_output/*.deb'
+                sh '~/debian_repo/update.sh'
             }
 
         }
@@ -34,7 +36,7 @@ pipeline {
 
     post {
         always {
-            emailext subject: "[PsikonCI ${env.JOB_NAME} - Started",
+            emailext subject: "[PsikonCI ${env.JOB_NAME} - Finished",
                      body: "${env.BUILD_URL}",
                      to: "ci@psikon.com",
                      recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']]
