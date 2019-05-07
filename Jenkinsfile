@@ -26,7 +26,9 @@ pipeline {
         stage("Build Debian Artifact") {
             steps {
                 sh 'building/debian/python_pkg.sh'
+                archiveArtifacts artifacts: 'dist/debian_output/*.deb', fingerprint: true
             }
+
         }
     }
 

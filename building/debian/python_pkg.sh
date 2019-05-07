@@ -42,3 +42,7 @@ tar -xzf $PKG_TARBALL
 cd $PKG_FULLNAME
 fpm $FPM_OPTS
 
+cd $PROJECT_DIR/dist
+mkdir debian_output
+mv $PKG_FULLNAME/$PKG_NAME*.deb ./debian_output
+
