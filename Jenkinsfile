@@ -4,8 +4,8 @@ pipeline {
     stages {
         stage("Prepare") {
             steps {
-                emailext subject: '[PsikonCI ${env.JOB_NAME} - Started',
-                         body: '${env.BUILD_URL}',
+                emailext subject: "[PsikonCI ${env.JOB_NAME} - Started",
+                         body: "${env.BUILD_URL}",
                          recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']]
             }
         }
