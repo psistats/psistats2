@@ -5,16 +5,7 @@ pipeline {
     stages {
         stage("Python 3.5 Unit Tests") {
             steps {
-                try {
-                    sh 'tox -e py35 --recreate --workdir /tmp/$(basename ${WORKSPACE})/tox-py35'
-                } catch(e) {
-                    emailext(
-                        subject: "FAILED: '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                        body: "${env.BUILD_URL}",
-                        recipientProviders: [[$class: 'DevelopersRecipientProvider']]
-                    )
-                }
-                        
+                sh 'tox -e py35 --recreate --workdir /tmp/$(basename ${WORKSPACE})/tox-py35'                            
             }
         }
 
@@ -22,6 +13,12 @@ pipeline {
             steps {
                 sh 'tox -e py36 --recreate --workdir /tmp/$(basename ${WORKSPACE})/tox-py36'
             }
+        }
+    }
+
+    post {
+        always {
+            emailext body: 'A Test EMail', recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: 'Test'
         }
     }
 }
