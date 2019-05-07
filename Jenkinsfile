@@ -22,7 +22,7 @@ pipeline {
     
         stage("Build Debian Artifact") {
             steps {
-                sh 'build/debian/python_pkg.sh'
+                sh 'building/debian/python_pkg.sh'
             }
         }
     }
