@@ -1,15 +1,13 @@
 pipeline {
 
     agent any
-
-    pre {
-        always {
-            emailext body: 'A Test EMail', recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: 'Test'
-        }
-    }
-
-
     stages {
+        stage("Prepare") {
+            steps {
+                emailext body: 'A Test EMail', recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: 'Test'
+            }
+        }
+
         stage("Python 3.5 Unit Tests") {
             steps {
                 sh 'tox -e py35 --recreate --workdir /tmp/$(basename ${WORKSPACE})/tox-py35'                            
