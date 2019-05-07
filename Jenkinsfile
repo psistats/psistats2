@@ -4,7 +4,9 @@ pipeline {
     stages {
         stage("Prepare") {
             steps {
-                emailext body: 'Job Starting test', recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: 'Job Start'
+                emailext subject: '[PsikonCI ${env.JOB_NAME} - Started',
+                         body: '${env.BUILD_URL}',
+                         recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']]
             }
         }
 
@@ -29,7 +31,10 @@ pipeline {
 
     post {
         always {
-            emailext body: 'Post Always: A Test EMail', recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: 'Job Done'
+            emailext subject: '[PsikonCI ${env.JOB_NAME} - Finished',
+                     body: '${env.BUILD_URL}',
+                     recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']]
+
         }
     }
 }
