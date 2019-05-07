@@ -1,10 +1,5 @@
 pipeline {
 
-    options {
-        ansiColor('xterm')
-        buildDiscarder(logRotator(numToKeepStr: '30'))
-    }
-
     stages {
 
         stage("Python 3.5 Unit Tests") {
