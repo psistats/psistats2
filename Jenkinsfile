@@ -6,7 +6,8 @@ pipeline {
             steps {
                 emailext subject: "[PsikonCI ${env.JOB_NAME} - Started",
                          body: "${env.BUILD_URL}",
-                         recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']]
+                         recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+                         to: ci@psikon.com
             }
         }
 
@@ -31,10 +32,10 @@ pipeline {
 
     post {
         always {
-            emailext subject: '[PsikonCI ${env.JOB_NAME} - Finished',
-                     body: '${env.BUILD_URL}',
-                     recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']]
-
+            emailext subject: "[PsikonCI ${env.JOB_NAME} - Started",
+                     body: "${env.BUILD_URL}",
+                     recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+                     to: ci@psikon.com
         }
     }
 }
