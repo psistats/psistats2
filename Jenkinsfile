@@ -2,6 +2,13 @@ pipeline {
 
     agent any
 
+    pre {
+        always {
+            emailext body: 'A Test EMail', recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: 'Test'
+        }
+    }
+
+
     stages {
         stage("Python 3.5 Unit Tests") {
             steps {
