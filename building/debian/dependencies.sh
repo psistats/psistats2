@@ -11,6 +11,7 @@ echo "Project: $PROJECT_DIR"
 
 FPM_OPTS="--python-bin python3 -s python -t deb"
 FPM_OPTS="$FPM_OPTS --python-package-name-prefix=python3"
+FPM_OPTS="$FPM_OPTS --python-install-lib=/usr/lib/python3/dist-packages"
 
 cd $PROJECT_DIR
 
