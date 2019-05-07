@@ -19,6 +19,12 @@ pipeline {
                 sh 'tox -e py36 --recreate --workdir /tmp/$(basename ${WORKSPACE})/tox-py36'
             }
         }
+    
+        stage("Build Debian Artifact") {
+            steps {
+                sh 'build/debian/python_pkg.sh'
+            }
+        }
     }
 
     post {
