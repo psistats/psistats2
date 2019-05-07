@@ -18,6 +18,12 @@ PKG_TARBALL=$PKG_NAME-$PKG_VERSION.tar.gz
 PKG_FULLNAME=$PKG_NAME-$PKG_VERSION
 
 
+if [ ! -z "$BUILD_NUMBER" ]; then
+    TARGET_VERSION=$PKG_VERSION$BUILD_NUMBER
+else
+    TARGET_VERSION=$PKG_VERSION
+fi
+
 FPM_OPTS="--python-bin python3 --no-python-fix-name --verbose"
 FPM_OPTS="$FPM_OPTS --python-package-name-prefix=python3"
 FPM_OPTS="$FPM_OPTS --python-obey-requirements-txt -s python"
@@ -26,6 +32,7 @@ FPM_OPTS="$FPM_OPTS --before-install packaging/linux/preinstall.sh"
 FPM_OPTS="$FPM_OPTS --python-install-bin /usr/local/bin"
 FPM_OPTS="$FPM_OPTS --after-remove packaging/linux/postuninstall.sh"
 FPM_OPTS="$FPM_OPTS --deb-systemd packaging/linux/psistats2.service"
+FPM_OPTS="$FPM_OPTS --version $TARGET_VERSION"
 FPM_OPTS="$FPM_OPTS -t deb ./setup.py"
 
 rm -rf dist
