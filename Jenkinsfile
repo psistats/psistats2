@@ -1,5 +1,7 @@
 pipeline {
 
+    agent any
+
     stages {
 
         stage("Python 3.5 Unit Tests") {
