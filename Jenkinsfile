@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage("Prepare") {
             steps {
-                emailext body: 'A Test EMail', recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: 'Job Start'
+                emailext body: 'Job Starting test', recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: 'Job Start'
             }
         }
 
