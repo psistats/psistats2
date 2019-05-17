@@ -3,6 +3,7 @@ import time
 import collections
 import logging
 import importlib
+import traceback
 
 
 def class_from_plugin_id(plugin_id):
@@ -323,6 +324,9 @@ class ReporterManager(threading.Thread):
 
       self._o_manager.add_report(message)
 
+
+
+
     def tick(self):
         """Executes every tick (1 second intervals)"""
         if self._counter > self._max_reporter_counter:
@@ -345,7 +349,10 @@ class ReporterManager(threading.Thread):
         """Starts the main loop"""
         self.logger.debug('Started')
         while self.running is True:
+          try:
             self.tick()
-            time.sleep(1)
+          except Exception as e:
+            self.logger.error(traceback.format_exc())
+          time.sleep(1)
 
         self.logger.debug('Stopped')

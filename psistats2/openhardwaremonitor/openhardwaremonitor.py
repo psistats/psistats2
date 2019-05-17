@@ -63,13 +63,13 @@ class OpenHardwareMonitor():
 
     SETTINGS = ['MainboardEnabled', 'CPUEnabled', 'RAMEnabled', 'GPUEnabled', 'FanControllerEnabled', 'HDDEnabled']
 
-    def __init__(self, **kwargs):
-        self.MainboardEnabled = kwargs.get('MainboardEnabled', False)
-        self.CPUEnabled = kwargs.get('CPUEnabled', False)
-        self.RAMEnabled = kwargs.get('RAMEnabled', False)
-        self.GPUEnabled = kwargs.get('GPUEnabled', False)
-        self.FanControllerEnabled = kwargs.get('FanControllerEnabled', False)
-        self.HDDEnabled = kwargs.get('HDDEnabled', False)
+    def __init__(self, sensors):
+        self.MainboardEnabled = sensors.get('MainboardEnabled', False)
+        self.CPUEnabled = sensors.get('CPUEnabled', False)
+        self.RAMEnabled = sensors.get('RAMEnabled', False)
+        self.GPUEnabled = sensors.get('GPUEnabled', False)
+        self.FanControllerEnabled = sensors.get('FanControllerEnabled', False)
+        self.HDDEnabled = sensors.get('HDDEnabled', False)
 
         self.__comp = None
 

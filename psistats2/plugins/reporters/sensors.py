@@ -1,5 +1,6 @@
 import os
 from psistats2.openhardwaremonitor.openhardwaremonitor import OpenHardwareMonitor
+from psistats2.openhardwaremonitor.openhardwaremonitor import get_type_name
 from psistats2.reporter import PsistatsReporterPlugin
 
 try:
@@ -36,7 +37,23 @@ class OHMReporter():
     def __init__(self, config):
         self.config = config
         self.initialized = False
-        self.ohm = OpenHardwareMonitor(CPUEnabled=True)
+
+        kwargs = {}
+
+        print(self.config)
+
+        for setting in OpenHardwareMonitor.SETTINGS:
+            enabled = self.config[setting.lower()]
+
+            if enabled == 'yes':
+                kwargs[setting] = True
+            else:
+                kwargs[setting] = False
+        
+        
+
+
+        self.ohm = OpenHardwareMonitor(kwargs)
 
     def init(self):
         self.ohm.init()
@@ -45,8 +62,8 @@ class OHMReporter():
     def report(self):
         if self.initialized is False:
             self.init()
-        self.ohm.update()
-        return "ohhhhmmmmm"
+        #self.ohm.update()
+        return [(str(sensor.Identifier), get_type_name(sensor.SensorType), sensor.Value) for sensor in self.ohm.all_sensors() if str(sensor.Identifier) in self.config['sensors']]
 
 
 class LmSensors():
@@ -66,5 +83,4 @@ class LmSensors():
         if self.sensors_initialized is False:
             self.init()
         return self._libsensors.sensor_values()
-
-#        return [(fname, sf.get_value()) for fname, sf in self.__features]
+        

@@ -16,7 +16,7 @@ class Uptime(PsistatsReporterPlugin):
           self._buf = ctypes.create_string_buffer(4096)
       elif os.name == 'nt':
           self._lib = ctypes.windll.kernel32
-          self._lib = ctypes.c_uint64
+          self._lib.GetTickCount64.restype = ctypes.c_uint64
       else:
           self._lib = None
 
