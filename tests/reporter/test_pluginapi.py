@@ -1,56 +1,52 @@
-from psistats2.reporter.registry import Registry
-from psistats2.reporter import ReporterPlugin
-from psistats2.reporter import OutputPlugin
+from psistats2.reporter import PsistatsReporterPlugin
+from psistats2.reporter import PsistatsOutputPlugin
+from psistats2.reporter import PsistatsPlugin
 import pytest
 
 
-@pytest.yield_fixture(autouse=True)
-def setup_registry():
-    Registry.ClearAll()
+def test_broken_reporter_plugin():
+
+  class TestReporter(PsistatsReporterPlugin):
+    pass
+
+  with pytest.raises(RuntimeError):
+    TestReporter({})
 
 
 def test_reporter_plugin():
 
-    class TestReporter(metaclass=ReporterPlugin):
-        pass
+  class TestReporter(PsistatsReporterPlugin):
+    PLUGIN_ID = 'test-reporter'
 
-    class IdTestReporter(metaclass=ReporterPlugin):
-        PLUGIN_ID = 'test-id'
+  tr = TestReporter({
+      'foo': 'bar'
+  })
 
-    assert Registry.HasEntry('reporters', 'test-id') is True
-
-    nonIdReporter = [reporter for reporter in Registry.GetEntries('reporters') if reporter[0].endswith('TestReporter')]
-    assert len(nonIdReporter) is 1
-
-
-def test_outputer_plugin():
-
-    class TestOutputter(metaclass=OutputPlugin):
-        pass
-
-    class IdTestOutputter(metaclass=OutputPlugin):
-        PLUGIN_ID = 'outputter-id'
-
-    assert Registry.HasEntry('outputters', 'outputter-id') is True
-
-    nonIdOutputter = [o for o in Registry.GetEntries('outputters') if o[0].endswith('TestOutputter')]
-    assert len(nonIdOutputter) is 1
-
-def test_outputter_config():
-
-    class TestOutputter(metaclass=OutputPlugin):
-        pass
-
-    to = TestOutputter()
-
-    assert to.config == {}
+  assert tr.config['foo'] == 'bar'
+  assert tr.PLUGIN_TYPE == 'reporter'
 
 
-def test_reporter_config():
+def test_broken_plugin_type():
+  class TestPlugin(PsistatsPlugin):
+    PLUGIN_ID = 'broken-plugin'
 
-    class TestReporter(metaclass=ReporterPlugin):
-        pass
+  with pytest.raises(RuntimeError):
+    TestPlugin({})
 
-    tr = TestReporter()
 
-    assert tr.config == {}
+def test_broken_output_plugin():
+  class TestOutputPlugin(PsistatsOutputPlugin):
+    pass
+
+  with pytest.raises(RuntimeError):
+    TestOutputPlugin({})
+
+
+def test_output_plugin():
+  class TestOutputPlugin(PsistatsOutputPlugin):
+    PLUGIN_ID = 'output-plugin'
+
+  to = TestOutputPlugin({'foo': 'bar'})
+
+  assert to.PLUGIN_TYPE == 'output'
+  assert to.config['foo'] == 'bar'

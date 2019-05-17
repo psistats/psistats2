@@ -9,7 +9,7 @@ class Amqp(PsistatsOutputPlugin):
 
     def __init__(self, config):
       super(Amqp, self).__init__(self, config)
-    
+
       self._connection = None
       self._channel = None
       self.initialized = False
@@ -54,4 +54,3 @@ class Amqp(PsistatsOutputPlugin):
                 return
 
         self._channel.basic_publish(self.config['exchange'], 'psistats.' + report.id, json.dumps(dict(report)))
-
