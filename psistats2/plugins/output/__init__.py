@@ -1,7 +1,9 @@
-from .amqp import AMQPOutput
+from .amqp import Amqp
 from .http import HttpOutput
-from .logging import OutputLogging
-from .stdout import OutputStdout 
-from .udp import UDPOutput
+from .logging import Logging
+from .stdout import Stdout
+from .udp import Udp
+from .mqtt import Mqtt
 
-__all__ = ['AMQPOutput', 'HttpOutput', 'OutputLogging', 'OutputStdout', 'UDPOutput']
+
+__all__ = ['Amqp', 'HttpOutput', 'Logging', 'Stdout', 'Udp', 'Mqtt']

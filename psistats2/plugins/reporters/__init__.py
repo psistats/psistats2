@@ -1,11 +1,12 @@
 from .cpu import CpuPerCore
 from .cpu import CpuTotal
-from .disk import DiskUsage
-from .ipaddr import IPAddrReporter
-from .mem import MemoryReport
-from .sensors import SensorReporter
+from .disk import Disk
+from .ipaddr import IpAddr
+from .mem import Mem
+from .sensors import Sensors
 from .sensors import OHMReporter
-from .uptime import UptimeReporter
+from .uptime import Uptime
 
-__all__ = ['CpuPerCore', 'CpuTotal', 'DiskUsage', 'IPAddrReporter', 'MemoryReport',
-           'IPAddrReporter', 'SensorReporter', 'OHMReporter', 'UptimeReporter']
+
+__all__ = ['CpuPerCore', 'CpuTotal', 'Disk', 'IpAddr', 'Mem',
+           'Sensors', 'OHMReporter', 'Uptime']

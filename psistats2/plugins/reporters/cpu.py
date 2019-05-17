@@ -1,18 +1,21 @@
 import psutil
-from psistats2.reporter.plugin import ReporterPlugin
-
-class CpuPerCore(metaclass=ReporterPlugin):
-
-    PLUGIN_ID = 'cpu_per_core'
-
-    def report(self, config=None):
-        return psutil.cpu_percent(percpu=True)
+from psistats2.reporter.plugin import PsistatsReporterPlugin
 
 
-class CpuTotal(metaclass=ReporterPlugin):
+class CpuPerCore(PsistatsReporterPlugin):
+
+  PLUGIN_ID = 'cpu_per_core'
+
+  def __init__(self, config):
+    super().__init__(config)
+
+  def report(self, config=None):
+      return psutil.cpu_percent(percpu=True)
+
+
+class CpuTotal(PsistatsReporterPlugin):
 
     PLUGIN_ID = 'cpu_total'
 
     def report(self, config=None):
         return psutil.cpu_percent(percpu=False)
-

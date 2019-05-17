@@ -1,9 +1,13 @@
-from psistats2.reporter import ReporterPlugin
+from psistats2.reporter import PsistatsReporterPlugin
 import psutil
 
-class DiskUsage(metaclass=ReporterPlugin):
 
-    PLUGIN_ID = 'disk_usage'
+class Disk(PsistatsReporterPlugin):
+
+    PLUGIN_ID = 'disk'
+
+    def __init__(self, config):
+      super(Disk, self).__init__(config)
 
     def report(self):
 

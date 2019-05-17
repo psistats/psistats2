@@ -1,13 +1,9 @@
-from psistats2.reporter import OutputPlugin
-import logging
+from psistats2.reporter import PsistatsOutputPlugin
 
-class OutputLogging(metaclass=OutputPlugin):
+
+class Logging(PsistatsOutputPlugin):
 
     PLUGIN_ID = 'logging'
 
-    def __init__(self):
-        self.logger = logging.getLogger('psistats2')
-
     def send(self, report):
-        self.logger.info('[%s:%s] - %s' % (report.id, report.sender, report.message))
-
+      self.logger.info('[%s:%s] - %s' % (report['hostname'], report['sender'], report['message']))

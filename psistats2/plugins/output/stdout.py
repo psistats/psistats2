@@ -1,9 +1,8 @@
-from psistats2.reporter import OutputPlugin
+from psistats2.reporter import PsistatsOutputPlugin
 
-class OutputStdout(metaclass=OutputPlugin):
+
+class Stdout(PsistatsOutputPlugin):
     PLUGIN_ID = 'stdout'
 
     def send(self, report):
         print(report)
-
-

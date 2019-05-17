@@ -1,6 +1,8 @@
 from psistats2.reporter.worker import Report
 import platform, calendar
 from datetime import datetime
+
+
 class PsistatsReport(Report):
 
     def __new__(cls, **kwargs):

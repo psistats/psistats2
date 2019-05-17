@@ -1,15 +1,12 @@
-from psistats2.reporter import OutputPlugin
+from psistats2.reporter import PsistatsOutputPlugin
 import json
 import urllib.request
 import urllib.error
-import logging
 
-class HttpOutput(metaclass=OutputPlugin):
+
+class HttpOutput(PsistatsOutputPlugin):
 
     PLUGIN_ID = 'http'
-
-    def __init__(self):
-        self.logger = logging.getLogger('psistats.http')
 
     def send(self, report):
         url = self.config['url']
@@ -23,6 +20,7 @@ class HttpOutput(metaclass=OutputPlugin):
         try:
             req = urllib.request.Request(url, data=data, headers=headers)
             res = urllib.request.urlopen(req)
+            return res
         except urllib.error.URLError as e:
             self.logger.error(str(e))
 

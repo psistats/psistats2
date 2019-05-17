@@ -1,12 +1,11 @@
-from psistats2.reporter import ReporterPlugin
+from psistats2.reporter import PsistatsReporterPlugin
 import psutil
 
-class MemoryReport(metaclass=ReporterPlugin):
 
-    PLUGIN_ID = 'memory'
+class Mem(PsistatsReporterPlugin):
+
+    PLUGIN_ID = 'mem'
 
     def report(self):
         mem = psutil.virtual_memory()
         return (mem.total, mem.free)
-
-

@@ -2,52 +2,42 @@ import threading
 import time
 import collections
 import logging
-from datetime import datetime
-import uuid
-import calendar
-from psistats2.reporter.registry import Registry
+import importlib
 
 
-class Report(tuple):
-    """Report
+def class_from_plugin_id(plugin_id):
+  return ''.join([part.capitalize() for part in plugin_id.split('_')])
 
-    This class wraps the data returned by reporters before it is
-    sent to an output plugin"""
-    __slots__ = []
 
-    def __new__(cls, **kwargs):
-        return tuple.__new__(cls, (
-            kwargs.get('id', str(uuid.uuid1())),
-            kwargs.get('message', None),
-            kwargs.get('sender', None),
-            calendar.timegm(datetime.utcnow().utctimetuple())
-        ))
+def load_plugins(plugin_configs, plugin_type):
 
-    @property
-    def id(self):
-        """Report ID"""
-        return tuple.__getitem__(self, 0)
+  plugins = []
 
-    @property
-    def message(self):
-        """Report Message
+  for plugin_id, plugin_config in plugin_configs.items():
 
-        This can be any kind of value"""
-        return tuple.__getitem__(self, 1)
+    if plugin_config['enabled'] is not True:
+      continue
 
-    @property
-    def timestamp(self):
-        """Timestamp in seconds when the report was genreated"""
-        return tuple.__getitem__(self, 3)
+    if 'className' not in plugin_config:
+      className = class_from_plugin_id(plugin_id)
+      package = 'psistats2'
+      module = 'plugins.' + plugin_type
+    else:
+      parts = plugin_config['className'].split('.')
+      package = parts[0]
+      if len(parts) > 2:
+        module = parts[1:-1]
+        className = parts[-1]
+      else:
+        module = ''
+        className = parts[1]
 
-    @property
-    def sender(self):
-        """Which reporter plugin sent this report"""
-        return tuple.__getitem__(self, 2)
+    plugin_module = importlib.import_module('%s.%s' % (package, module))
+    plugin_class = getattr(plugin_module, className)
 
-    def __iter__(self):
-        for key in ['id', 'timestamp', 'message', 'sender']:
-            yield (key, getattr(self, key))
+    plugins.append(plugin_class(plugin_config['settings']))
+
+  return plugins
 
 
 class Manager(threading.Thread):
@@ -87,20 +77,18 @@ class Manager(threading.Thread):
     :param config: object Configuration object
     :param reportClass: Report Which report class to use
     """
-    def __init__(self, config=None, reportClass=Report, *args, **kwargs):
+    def __init__(self, hostname, config, *args, **kwargs):
+      super().__init__(*args, **kwargs)
+      self.config = config
+      self.hostname = hostname
+      self.logger = logging.getLogger(name='psireporter.manager')
+      self.output_plugins = []
+      self.reporter_plugins = []
 
-        self.logger = logging.getLogger(name='psireporter.manager')
+      self.reporter_thread = None
+      self.output_thread = None
 
-        self.running = False
-
-        if config is None:
-            self.config = {}
-        else:
-            self.config = config
-
-        self._reportClass = reportClass
-
-        super().__init__(*args, **kwargs)
+      self.running = False
 
     def start(self):
         """Start the Manager thread"""
@@ -115,27 +103,33 @@ class Manager(threading.Thread):
 
     def run(self):
         """Starts the main loop"""
-        self.logger.debug('Start manager threads')
-        outputters = Registry.GetEntries('outputters')
-        reporters = Registry.GetEntries('reporters')
+        self.logger.info('Loading plugins')
 
-        self.logger.debug('Available output plugins: %s' % len(outputters))
-        self.logger.debug('Available reporter plugins: %s' % len(reporters))
+        self.output_plugins = load_plugins(self.config['outputters'], 'output')
+        self.reporter_plugins = load_plugins(self.config['reporters'], 'reporters')
 
-        o_manager = OutputManager(outputters, self.config.get('outputters', {}))
-        r_manager = ReporterManager(reporters, o_manager, self.config.get('reporters', {}),
-            reportClass=self._reportClass
-        )
+        for plugin in self.output_plugins:
+          self.logger.debug('Plugin: %s:%s' % (plugin.PLUGIN_TYPE, plugin.PLUGIN_ID))
+
+        for plugin in self.reporter_plugins:
+          self.logger.debug('Plugin: %s:%s' % (plugin.PLUGIN_TYPE, plugin.PLUGIN_ID))
+
+        o_manager = OutputManager(self.hostname, self.output_plugins, self.config)
+        r_manager = ReporterManager(self.hostname, self.reporter_plugins, o_manager, self.config)
 
         o_manager.start()
         r_manager.start()
 
-        self.logger.debug('Started')
         while self.running is True:
+          try:
             time.sleep(1)
+          except KeyboardInterrupt:
+            self.stop()
 
         o_manager.stop()
         r_manager.stop()
+        o_manager.join()
+        r_manager.join()
 
         self.logger.debug('Stopped')
 
@@ -192,37 +186,26 @@ class OutputManager(threading.Thread):
     """Output Manager Thread
 
     Manages output plugins and a master queue of reports."""
-    def __init__(self, outputters, config=None, *args, **kwargs):
+    def __init__(self, hostname, plugins, config, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.logger = logging.getLogger(name='psireporter.output-manager')
         self._workers = []
+        self.hostname = hostname
+        self.config = config
 
-        if config is None:
-            self.config = {}
-        else:
-            self.config = config
+        for plugin in plugins:
+          plugin_id = plugin.PLUGIN_ID
+          config = self.config['outputters'][plugin_id]
 
-        for outputter_id, outputter in outputters:
+          if 'enabled' not in config:
+            self.config['outputters'][plugin_id]['enabled'] = True
 
-            if outputter_id not in self.config:
-                self.config[outputter_id] = {
-                    'enabled': True,
-                    'settings': {}
-                }
-            else:
-                if 'enabled' not in self.config[outputter_id]:
-                    self.config[outputter_id]['enabled'] = True
+          if 'settings' not in config:
+            self.config['outputters'][plugin_id]['settings'] = {}
 
-                if 'settings' not in self.config[outputter_id]:
-                    self.config[outputter_id]['settings'] = {}
-
-            if self.config[outputter_id]['enabled'] is not False:
-
-                plugin = outputter(self.config[outputter_id]['settings'])
-                ow = OutputWorker(plugin)
-
-                self._workers.append(ow)
-
-        super().__init__(*args, **kwargs)
+          if self.config['outputters'][plugin_id]['enabled'] is not False:
+            ow = OutputWorker(plugin)
+            self._workers.append(ow)
 
     def start(self):
         """Starts the Output Manager thread"""
@@ -261,7 +244,7 @@ class OutputManager(threading.Thread):
             worker.stop()
 
         while self.has_running_workers():
-            time.sleep(10)
+            time.sleep(1)
 
         self.logger.debug('Stopped')
 
@@ -271,14 +254,11 @@ class ReporterManager(threading.Thread):
 
     Manages the various Reporter plugins and maintains the main loop
     of reporters."""
-    def __init__(self, reporters, o_manager, config=None, *args, **kwargs):
-
+    def __init__(self, hostname, reporters, o_manager, config, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.hostname = hostname
+        self.config = config
         self.logger = logging.getLogger('psireporter.reporter-manager')
-
-        if config is None:
-            self.config = {}
-        else:
-            self.config = config
 
         self.running = False
         self._o_manager = o_manager
@@ -286,51 +266,39 @@ class ReporterManager(threading.Thread):
         self._reporter_counter = 0
         self._max_reporter_counter = 0
 
-        self._reportClass = kwargs.get('reportClass', Report)
-
-        if 'reportClass' in kwargs:
-            del kwargs['reportClass']
-
         self._reporters = {}
         self._outputters = {}
         self._triggers = {}
         self._counter = 1
         self._first_run = True
 
-        for reporter_id, reporter in reporters:
+        for reporter in reporters:
+          reporter_id = reporter.PLUGIN_ID
+          config = self.config['reporters'][reporter.PLUGIN_ID]
 
-            if reporter_id not in self.config:
-                self.config[reporter_id] = {
-                    'interval': 1,
-                    'enabled': True,
-                    'settings': {}
-                }
-            else:
-                if 'interval' not in self.config[reporter_id]:
-                    self.config[reporter_id]['interval'] = 1
+          if 'interval' not in self.config['reporters'][reporter_id]:
+              self.config['reporters'][reporter_id]['interval'] = 1
 
-                if 'settings' not in self.config[reporter_id]:
-                    self.config[reporter_id]['settings'] = {}
+          if 'settings' not in self.config['reporters'][reporter_id]:
+              self.config['reporters'][reporter_id]['settings'] = {}
 
-                if 'enabled' not in self.config[reporter_id]:
-                    self.config[reporter_id]['enabled'] = True
+          if 'enabled' not in self.config['reporters'][reporter_id]:
+              self.config['reporters'][reporter_id]['enabled'] = False
 
-            if self.config[reporter_id]['enabled'] is not False:
+          if self.config['reporters'][reporter_id]['enabled'] is not False:
 
-                self._reporters[reporter_id] = reporter(self.config[reporter_id]['settings'])
+              self._reporters[reporter_id] = reporter
 
-                interval = self.config[reporter_id]['interval']
+              interval = self.config['reporters'][reporter_id]['interval']
 
-                if interval not in self._triggers:
-                    self._triggers[interval] = []
+              if interval not in self._triggers:
+                  self._triggers[interval] = []
 
-                self._triggers[interval].append(reporter_id)
+              self._triggers[interval].append(reporter_id)
 
         self._max_reporter_counter = max(self._triggers.keys())
 
         self._trigger_counters = self._triggers.keys()
-
-        super().__init__(*args, **kwargs)
 
     def start(self):
         """Start the Reporter Manager thread"""
@@ -343,30 +311,34 @@ class ReporterManager(threading.Thread):
         self.logger.debug('Stopping...')
         self.running = False
 
+    def queue_report(self, reporter_id):
+      reporter = self._reporters[reporter_id]
+      report = reporter.report()
+
+      message = {
+          'hostname': self.hostname,
+          'sender': reporter_id,
+          'message': report
+      }
+
+      self._o_manager.add_report(message)
+
     def tick(self):
         """Executes every tick (1 second intervals)"""
         if self._counter > self._max_reporter_counter:
-            self._counter = 1
+          self._counter = 1
 
         if self._first_run is True:
-            for reporter_id in sorted(self._reporters.keys()):
-                reporter = self._reporters[reporter_id]
-                message = reporter.report()
+          for reporter_id in sorted(self._reporters.keys()):
+            self.queue_report(reporter_id)
 
-                report = self._reportClass(message=message, sender=reporter_id)
-
-                self._o_manager.add_report(report)
-            self._first_run = False
+          self._first_run = False
         else:
-            for counter in self._trigger_counters:
-                if self._counter % counter == 0:
-                    for reporter_id in self._triggers[counter]:
-                        reporter = self._reporters[reporter_id]
-                        message = reporter.report()
+          for counter in self._trigger_counters:
+            if self._counter % counter == 0:
+              for reporter_id in self._triggers[counter]:
+                self.queue_report(reporter_id)
 
-                        report = self._reportClass(message=message, sender=reporter_id)
-
-                        self._o_manager.add_report(report)
         self._counter += 1
 
     def run(self):

@@ -1,19 +1,11 @@
-
-
 from docopt import docopt
-import os, sys
-
-print('System path: %s' % sys.path)
-# print('Env path: %s' % os.environ['PYTHONPATH'].split(os.pathsep))
-
+import os
+import sys
 import logging
-from logging.config import fileConfig
+from logging.config import fileConfig as logFileConfig
 from psistats2 import config
-from psistats2.report import PsistatsReport
-import time
+import socket
 from psistats2.reporter import Manager
-from psistats2.plugins.output import *
-from psistats2.plugins.reporters import *
 import ifaddr
 
 __doc__ = """psistats2
@@ -34,9 +26,12 @@ Options:
     --version      Display the version
 """
 
-PIDFILE='/var/run/psistats2.pid'
+PIDFILE = '/var/run/psistats2.pid'
 
-       
+
+def get_hostname():
+  return socket.gethostbyaddr(socket.gethostname())[0]
+
 
 def print_all_ifaces():
 
@@ -47,8 +42,6 @@ def print_all_ifaces():
     print('Use the interface identifier when configuring which interfaces to report')
     print('on.')
     print(' ')
-
-    addresses = []
 
     ipaddrs = []
     for adapter in ifaddr.get_adapters():
@@ -75,22 +68,22 @@ def print_all_ifaces():
         first_ip = ips[0]
         if type(first_ip) is tuple:
             first_ip = ips[0][0]
-        
+
         try:
             first_ip = first_ip.decode('utf-8')
         except AttributeError:
             pass
-            
+
         try:
             name = name.decode('utf-8')
         except AttributeError:
             pass
-        
+
         try:
             nice_name = name.decode('utf-8')
         except AttributeError:
             pass
-	
+
         sys.stdout.write('%s' % (name.ljust(namewidth)))
         sys.stdout.write('%s' % (nice_name.ljust(nicenamewidth)))
         sys.stdout.write('%s' % first_ip)
@@ -98,35 +91,36 @@ def print_all_ifaces():
 
         if len(ips) > 1:
             for ip in ips[1:]:
-                
+
                 if type(ip) is tuple:
                     ip = ip[0]
-           
+
                 try:
                     ip = ip.decode('utf-8')
                 except AttributeError:
                     pass
-            
+
                 sys.stdout.write(' ' * (namewidth + nicenamewidth))
                 sys.stdout.write(ip)
                 sys.stdout.write(os.linesep)
 
 
-
-
 def list_ifaces():
     print_all_ifaces()
 
+
 def list_sensors():
-    if os.name is 'nt':
+    if os.name == 'nt':
         from psistats2.openhardwaremonitor.openhardwaremonitor import print_all_sensors
     else:
         from psistats2.libsensors.libsensors import print_all_sensors
     print_all_sensors()
 
+
 def start():
     pass
-    
+
+
 def stop():
     pass
 
@@ -135,47 +129,45 @@ def restart():
     stop()
     start()
 
+
 def console(conf):
 
-    manager = Manager(conf, reportClass=PsistatsReport)
+    if 'hostname' in conf['settings'] and len(conf['settings']['hostname']) > 0:
+      hostname = conf['settings']['hostname']
+    else:
+      hostname = get_hostname()
+
+    logger = logging.getLogger('psistats2')
+    logger.info('Starting psistats2')
+
+    manager = Manager(hostname, conf)
     manager.start()
 
-
     try:
-        while True:
-            time.sleep(1)
+      manager.join()
     except KeyboardInterrupt:
-        pass
-    finally:
-        manager.stop()
+      manager.stop()
+
 
 def main():
     run(sys.argv)
 
 
 def run(argv):
-
-
-
     arguments = docopt(__doc__, argv=argv[1:], version='psistats2 v0.0.1')
 
     conffile = arguments['--config'] if arguments['--config'] is not None else config.detect_config_file()
+    logFileConfig(conffile)
 
     conf = config.load(conffile)
 
-    fileConfig(conffile)
-
-    logger = logging.getLogger('psistats2')
-    logger.info('Starting psistats2')
-
-    if arguments['ifaces'] == True:
+    if arguments['ifaces'] is True:
         list_ifaces()
-    elif arguments['sensors'] == True:
+    elif arguments['sensors'] is True:
         list_sensors()
-    elif arguments['start'] == True:
+    elif arguments['start'] is True:
         start()
-    elif arguments['stop'] == True:
+    elif arguments['stop'] is True:
         stop()
-    elif arguments['console'] == True:
+    elif arguments['console'] is True:
         console(conf)
-

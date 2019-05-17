@@ -1,15 +1,18 @@
-from psistats2.reporter import OutputPlugin
-import time, logging, json
+from psistats2.reporter import PsistatsOutputPlugin
+import time
+import json
 
-class AMQPOutput(metaclass=OutputPlugin):
+
+class Amqp(PsistatsOutputPlugin):
 
     PLUGIN_ID = 'amqp'
 
-    def __init__(self):
-        self._connection = None
-        self._channel = None
-        self.initialized = False
-        self.logger = logging.getLogger('psistats.amqp')
+    def __init__(self, config):
+      super(Amqp, self).__init__(self, config)
+    
+      self._connection = None
+      self._channel = None
+      self.initialized = False
 
     def init(self):
 
