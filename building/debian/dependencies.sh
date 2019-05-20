@@ -1,4 +1,7 @@
 #!/bin/bash
+####
+# Prepared debian files from the contents of requirements.txt
+####
 set -e
 set -v
 set -x

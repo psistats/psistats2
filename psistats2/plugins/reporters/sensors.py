@@ -3,19 +3,14 @@ from psistats2.openhardwaremonitor.openhardwaremonitor import OpenHardwareMonito
 from psistats2.openhardwaremonitor.openhardwaremonitor import get_type_name
 from psistats2.reporter import PsistatsReporterPlugin
 
-try:
-    from psistats2.libsensors.libsensors import LibSensors
-except:  # noqa: E722
-    pass
-
 
 class Sensors(PsistatsReporterPlugin):
 
     PLUGIN_ID = "sensors"
 
     def __init__(self, config):
-      super(Sensors, self).__init__(config)
-      self.initialized = False
+        super(Sensors, self).__init__(config)
+        self.initialized = False
 
     def init(self):
         if os.name == 'nt':
@@ -74,6 +69,12 @@ class LmSensors():
         self._libsensors = None
 
     def init(self):
+
+        try:
+            from psistats2.libsensors.libsensors import LibSensors
+        except:  # noqa: E722
+            pass
+
         self._libsensors = LibSensors(identifiers=self.config['sensors'])
         self._libsensors.init()
 
