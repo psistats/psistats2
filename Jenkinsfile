@@ -12,15 +12,17 @@ pipeline {
         }
 
         stage('Unit Tests') {
-            agent { label 'master' }
+            
             parallel {
                 stage("Python 3.5 Unit Tests") {
+                    agent { label 'master' }
                     steps {
                         sh 'tox -e py35 --recreate --workdir /tmp/$(basename ${WORKSPACE})/tox-py35'                            
                     }
                 }
 
                 stage("Python 3.6 Unit Tests") {
+                    agent { label 'master' }
                     steps {
                         sh 'tox -e py36 --recreate --workdir /tmp/$(basename ${WORKSPACE})/tox-py36'
                     }
