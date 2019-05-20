@@ -1,6 +1,6 @@
 pipeline {
 
-    agent any
+    agent 'master'
     stages {
         stage("Prepare") {
             steps {
