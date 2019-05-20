@@ -49,6 +49,8 @@ pipeline {
                         pip install -r requirements_win.txt
                         building\\windows\\build.bat
                         """
+                        zip zipFile: 'dist/psistats2.zip', dir: 'dist/psistats2/**/*'
+                        archiveArtifacts artifacts: 'dist/psistats2.zip', fingerprint: true
                     }
                 }
             }
