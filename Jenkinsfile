@@ -1,7 +1,9 @@
 pipeline {
 
     agent { label 'master' }
-
+    parameters {
+        booleanParam(name: 'windows', defaultValue: false, description: 'Enable to trigger windows builds')
+    }
     stages {
         stage("Prepare") {
             steps {
@@ -42,6 +44,9 @@ pipeline {
                     }
                 }
                 stage('Windows') {
+                    when {
+                        expression { params.windows == true }
+                    }
                     agent { label 'windows' }
                     environment {
                         PATH = "C:\\Users\\moogle\\jenkins\\workspace\\psistats2_develop\\env\\Scripts;${env.PATH}"
