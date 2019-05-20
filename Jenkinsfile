@@ -11,8 +11,8 @@ pipeline {
                          body: "${env.BUILD_URL}",
                          to: "ci@psikon.com",
                          recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']]
+                cleanWs
             }
-            cleanWs()
         }
 
         stage('Unit Tests') {
