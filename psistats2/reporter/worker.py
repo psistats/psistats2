@@ -324,9 +324,6 @@ class ReporterManager(threading.Thread):
 
       self._o_manager.add_report(message)
 
-
-
-
     def tick(self):
         """Executes every tick (1 second intervals)"""
         if self._counter > self._max_reporter_counter:
@@ -351,7 +348,7 @@ class ReporterManager(threading.Thread):
         while self.running is True:
           try:
             self.tick()
-          except Exception as e:
+          except:  # noqa: E722
             self.logger.error(traceback.format_exc())
           time.sleep(1)
 
