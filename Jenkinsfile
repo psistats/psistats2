@@ -56,11 +56,14 @@ pipeline {
                 }
             }
         }
+        stage('Done') {
+            currentBuild.result = 'SUCCESS'
+        }
     }
 
     post {
         always {
-            emailext subject: "[PsikonCI] ${env.JOB_NAME} - ${env.BUILD_STATUS}",
+            emailext subject: "[PsikonCI] ${env.JOB_NAME} - ${currentBuild.result}",
                      body: "${env.BUILD_URL}",
                      to: "ci@psikon.com",
                      recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']]
