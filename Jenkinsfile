@@ -47,7 +47,7 @@ pipeline {
                         env\\Scripts\\activate.bat
                         pip install -r requirements_win.txt
                         building\\windows\\build.bat
-                        """"
+                        """
                     }
                 }
             }
