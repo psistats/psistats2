@@ -12,40 +12,44 @@ pipeline {
         }
 
         stage('Unit Tests') {
-            stage("Python 3.5") {
-                agent { label 'master' }
-                steps {
-                    sh 'tox -e py35 --recreate --workdir /tmp/$(basename ${WORKSPACE})/tox-py35'                            
+            parallel {
+                stage("Python 3.5") {
+                    agent { label 'master' }
+                    steps {
+                        sh 'tox -e py35 --recreate --workdir /tmp/$(basename ${WORKSPACE})/tox-py35'                            
+                    }
+                }
+
+                stage("Python 3.6") {
+                    agent { label 'master' }
+                    steps {
+                        sh 'tox -e py36 --recreate --workdir /tmp/$(basename ${WORKSPACE})/tox-py36'
+                    }
                 }
             }
-
-            stage("Python 3.6") {
-                agent { label 'master' }
-                steps {
-                    sh 'tox -e py36 --recreate --workdir /tmp/$(basename ${WORKSPACE})/tox-py36'
-                }
-            }                
         }
 
         stage('Build Artifacts') {
-            stage('Debian') {
-                agent { label 'master' }
-                steps {
-                    sh 'building/debian/python_pkg.sh'
-                    archiveArtifacts artifacts: 'dist/debian_output/*.deb', fingerprint: true
-                    sh 'aptly repo add psikon-devel dist/debian_output/*.deb'
-                    sh '~/debian_repo/update.sh'                        
+            parallel {
+                stage('Debian') {
+                    agent { label 'master' }
+                    steps {
+                        sh 'building/debian/python_pkg.sh'
+                        archiveArtifacts artifacts: 'dist/debian_output/*.deb', fingerprint: true
+                        sh 'aptly repo add psikon-devel dist/debian_output/*.deb'
+                        sh '~/debian_repo/update.sh'                        
+                    }
                 }
-            }
-            stage('Windows') {
-                agent { label 'windows' }
-                steps {
-                    bat """
-                    virtualenv env -p python3
-                    env\\Scripts\\activate.bat
-                    pip install -r requirements_win.txt
-                    building\\windows\\build.bat
-                    """
+                stage('Windows') {
+                    agent { label 'windows' }
+                    steps {
+                        bat """
+                        virtualenv env -p python3
+                        env\\Scripts\\activate.bat
+                        pip install -r requirements_win.txt
+                        building\\windows\\build.bat
+                        """
+                    }
                 }
             }
         }
