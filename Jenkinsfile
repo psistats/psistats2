@@ -12,6 +12,7 @@ pipeline {
                          to: "ci@psikon.com",
                          recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']]
             }
+            cleanWs()
         }
 
         stage('Unit Tests') {
