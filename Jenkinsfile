@@ -44,7 +44,7 @@ pipeline {
                     agent { label 'windows' }
                     steps {
                         bat """
-                        virtualenv env -p python3
+                        virtualenv env
                         env\\Scripts\\activate.bat
                         pip install -r requirements_win.txt
                         building\\windows\\build.bat
