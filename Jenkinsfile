@@ -1,6 +1,6 @@
 pipeline {
 
-    agent 'master'
+    agent { label 'master' }
     stages {
         stage("Prepare") {
             steps {
