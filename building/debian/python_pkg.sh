@@ -1,5 +1,7 @@
 #!/bin/bash
-
+###
+# Prepared debian package of psistats2
+###
 set -e
 set -v
 set -x

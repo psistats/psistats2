@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
-from psistats2.cli import main
-import sys
+from psistats2 import cli
 
 if __name__ == '__main__':
-    main()
+    cli.main()
