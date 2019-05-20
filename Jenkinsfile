@@ -43,12 +43,12 @@ pipeline {
                 stage('Windows') {
                     agent { label 'windows' }
                     steps {
-                        bat """
-                        virtualenv env
-                        env\\Scripts\\activate.bat
-                        pip install -r requirements_win.txt
-                        building\\windows\\build.bat
-                        """
+                        bat 'virtualenv env'
+                        bat 'env\\Scripts\\activate.bat'
+                        env.VENV = "C:\Users\moogle\Documents\GitHub\psistats2\env"
+                        env.PATH = "${VENV}\Scripts;${PATH}"
+                        bat 'pip install -r requirements_win.txt'
+                        bat 'building\\windows\\build.bat'
                         zip zipFile: 'dist/psistats2.zip', dir: 'dist/psistats2/**/*'
                         archiveArtifacts artifacts: 'dist/psistats2.zip', fingerprint: true
                     }
