@@ -44,7 +44,7 @@ pipeline {
                 stage('Windows') {
                     agent { label 'windows' }
                     environment {
-                        PATH = "C:\Users\moogle\jenkins\workspace\psistats2_develop\env\Scripts;${env.PATH}"
+                        PATH = "C:\\Users\\moogle\\jenkins\\workspace\\psistats2_develop\\env\\Scripts;${env.PATH}"
                     }                    
                     steps {
                         bat 'virtualenv env'
