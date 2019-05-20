@@ -1,9 +1,7 @@
 pipeline {
 
     agent { label 'master' }
-    environment {
-        PATH = "C:\\Users\\moogle\\Documents\\GitHub\\psistats2\\env\\Scripts;${env.PATH}"
-    }
+
     stages {
         stage("Prepare") {
             steps {
@@ -45,6 +43,9 @@ pipeline {
                 }
                 stage('Windows') {
                     agent { label 'windows' }
+                    environment {
+                        PATH = "C:\\Users\\moogle\\Documents\\GitHub\\psistats2\\env\\Scripts;${env.PATH}"
+                    }                    
                     steps {
                         bat 'virtualenv env'
                         bat 'pip install -r requirements_win.txt'
