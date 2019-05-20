@@ -21,6 +21,7 @@ class Mqtt(PsistatsOutputPlugin):
             self._client.tls_set()
 
         self._client.connect(self.config['host'], int(self.config['port']), int(self.config['timeout']))
+        self.logger.info('Connected to MQTT Broker')
         self.initialized = True
 
     def send(self, report):
