@@ -27,4 +27,4 @@ class Mqtt(PsistatsOutputPlugin):
         if self.initialized is False:
             self.init()
 
-        self._client.publish("psistats2/%s" % report.id, json.dumps(dict(report)))
+        self._client.publish("psistats2/%s" % report.hostname, json.dumps(dict(report)))
