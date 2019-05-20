@@ -45,7 +45,7 @@ pipeline {
                     steps {
                         bat 'virtualenv env'
                         env.VENV = "C:\\Users\\moogle\\Documents\\GitHub\\psistats2\\env"
-                        env.PATH = "${VENV}\Scripts;${PATH}"
+                        env.PATH = "${VENV}\\Scripts;${PATH}"
                         bat 'pip install -r requirements_win.txt'
                         bat 'building\\windows\\build.bat'
                         zip zipFile: 'dist/psistats2.zip', dir: 'dist/psistats2/**/*'
