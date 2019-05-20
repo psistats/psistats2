@@ -44,8 +44,7 @@ pipeline {
                     agent { label 'windows' }
                     steps {
                         bat 'virtualenv env'
-                        bat 'env\\Scripts\\activate.bat'
-                        env.VENV = "C:\Users\moogle\Documents\GitHub\psistats2\env"
+                        env.VENV = "C:\\Users\\moogle\\Documents\\GitHub\\psistats2\\env"
                         env.PATH = "${VENV}\Scripts;${PATH}"
                         bat 'pip install -r requirements_win.txt'
                         bat 'building\\windows\\build.bat'
