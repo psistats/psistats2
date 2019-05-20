@@ -20,7 +20,7 @@ pipeline {
                 stage("Python 3.5") {
                     agent { label 'master' }
                     steps {
-                        sh 'tox -e py35 --recreate --workdir /tmp/$(basename ${WORKSPACE})/tox-py35'                            
+                        sh 'tox -e py35 --recreate --workdir /tmp/$(basename ${WORKSPACE})/tox-py35'
                     }
                 }
 
@@ -34,6 +34,11 @@ pipeline {
         }
 
         stage('Build Artifacts') {
+            when {
+                expression {
+                    params.windows == true
+                }
+            }
             parallel {
                 stage('Debian') {
                     agent { label 'master' }
@@ -41,7 +46,7 @@ pipeline {
                         sh 'building/debian/python_pkg.sh'
                         archiveArtifacts artifacts: 'dist/debian_output/*.deb', fingerprint: true
                         sh 'aptly repo add psikon-devel dist/debian_output/*.deb'
-                        sh '~/debian_repo/update.sh'                        
+                        sh '~/debian_repo/update.sh'
                     }
                 }
                 stage('Windows') {
@@ -51,13 +56,32 @@ pipeline {
                     agent { label 'windows' }
                     environment {
                         PATH = "C:\\Users\\moogle\\jenkins\\workspace\\psistats2_develop\\env\\Scripts;${env.PATH}"
-                    }                    
+                    }
                     steps {
                         bat 'virtualenv env'
                         bat 'pip install -r requirements_win.txt'
                         bat 'building\\windows\\build.bat'
                         zip zipFile: 'dist\\psistats2.zip', dir: 'dist\\psistats2'
                         archiveArtifacts artifacts: 'dist/psistats2.zip', fingerprint: true
+                    }
+                }
+            }
+        }
+
+        stage('Build Linux Artifacts') {
+          when {
+            expression {
+              params.windows == false
+            }
+          }
+            parallel {
+                stage('Debian') {
+                    agent { label 'master' }
+                    steps {
+                        sh 'building/debian/python_pkg.sh'
+                        archiveArtifacts artifacts: 'dist/debian_output/*.deb', fingerprint: true
+                        sh 'aptly repo add psikon-devel dist/debian_output/*.deb'
+                        sh '~/debian_repo/update.sh'
                     }
                 }
             }
