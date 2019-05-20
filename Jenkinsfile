@@ -59,7 +59,7 @@ pipeline {
 
     post {
         always {
-            emailext subject: "[PsikonCI] ${env.JOB_NAME} - Finished",
+            emailext subject: "[PsikonCI] ${env.JOB_NAME} - ${env.BUILD_STATUS}",
                      body: "${env.BUILD_URL}",
                      to: "ci@psikon.com",
                      recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']]
