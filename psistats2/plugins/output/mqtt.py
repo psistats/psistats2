@@ -9,10 +9,11 @@ class Mqtt(PsistatsOutputPlugin):
 
     def __init__(self, config):
       super(Mqtt, self).__init__(config)
-      self._client = mqtt.Client()
       self.initialized = False
 
     def init(self):
+
+        self._client = mqtt.Client()
 
         if self.config['username'] and self.config['password']:
             self._client.username_pw_set(self.config['username'], self.config['password'])
@@ -20,12 +21,22 @@ class Mqtt(PsistatsOutputPlugin):
         if self.config['ssl'] != 'no':
             self._client.tls_set()
 
-        self._client.connect(self.config['host'], int(self.config['port']), int(self.config['timeout']))
-        self.logger.info('Connected to MQTT Broker')
-        self.initialized = True
+        try:
+          self._client.connect(self.config['host'], int(self.config['port']), int(self.config['timeout']))
+          self.logger.info('MQTT Client initialized')
+          self.initialized = True
+        except Exception as e:
+          self.logger.error('Error connceting to MQTT: %s' % e)
 
     def send(self, report):
         if self.initialized is False:
             self.init()
+        if self.initialized is False:
+          return
 
-        self._client.publish("psistats2/%s" % report['hostname'], json.dumps(dict(report)))
+        res = self._client.publish("psistats2/%s" % report['hostname'], json.dumps(dict(report)))
+
+        if (res[0] != 0):
+          self.initialized = False
+
+        self._client.loop()

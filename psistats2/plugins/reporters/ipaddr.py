@@ -9,8 +9,10 @@ class IpAddr(PsistatsReporterPlugin):
         ipaddrs = []
 
         for iface in self.config['ifaces']:
-            addrs = netifaces.ifaddresses(iface)[netifaces.AF_LINK]
-
-            ipaddrs.append(addrs)
+            try:
+              addrs = netifaces.ifaddresses(iface)[netifaces.AF_LINK]
+              ipaddrs.append(addrs)
+            except ValueError:
+              self.logger.error('%s is an invalid network interface' % iface)
 
         return ipaddrs
