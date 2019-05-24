@@ -10,10 +10,17 @@ class IpAddr(PsistatsReporterPlugin):
 
         for iface in self.config['ifaces']:
             try:
-              addrs = netifaces.ifaddresses(iface)[netifaces.AF_INET][0]['addr']
+              netiface = netifaces.ifaddresses(iface)
+              if netifaces.AF_INET in netiface:
+                addrs = netifaces.ifaddresses(iface)[netifaces.AF_INET][0]['addr']
+              else:
+                addrs = None
 
-              msg = {}
-              msg[iface] = addrs
+
+              msg = {
+                'iface': iface,
+                'addrs': addrs
+              }
 
               ipaddrs.append(msg)
             except ValueError:
