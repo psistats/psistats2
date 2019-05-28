@@ -34,7 +34,12 @@ class Mqtt(PsistatsOutputPlugin):
         if self.initialized is False:
           return
 
-        res = self._client.publish("psistats2/%s" % report['hostname'], json.dumps(dict(report)))
+        if self.config['topic_per_sender']:
+            topic = "psistats2/%s/%s" % (report['hostname'], report['sender'])
+        else:
+            topic = "psistats2/%s" % report['hostname']
+
+        res = self._client.publish(topic, json.dumps(dict(report)))
 
         if (res[0] != 0):
           self.initialized = False
