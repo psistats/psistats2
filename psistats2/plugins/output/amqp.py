@@ -8,7 +8,7 @@ class Amqp(PsistatsOutputPlugin):
     PLUGIN_ID = 'amqp'
 
     def __init__(self, config):
-      super(Amqp, self).__init__(self, config)
+      super(Amqp, self).__init__(config)
 
       self._connection = None
       self._channel = None
@@ -36,13 +36,6 @@ class Amqp(PsistatsOutputPlugin):
 
         self._connection = pika.BlockingConnection(params)
         self._channel = self._connection.channel()
-        self._channel.exchange_declare(
-            exchange=self.config['exchange'],
-            exchange_type='topic',
-            durable=False,
-            auto_delete=False
-        )
-
         self.initialized = True
 
     def send(self, report):
@@ -53,4 +46,7 @@ class Amqp(PsistatsOutputPlugin):
                 time.sleep(10)
                 return
 
-        self._channel.basic_publish(self.config['exchange'], 'psistats.' + report.id, json.dumps(dict(report)))
+        self._channel.basic_publish(
+            self.config['exchange'], 
+            'psistats2.%s.%s' % (report['hostname'], report['sender']), 
+            json.dumps(dict(report)))
